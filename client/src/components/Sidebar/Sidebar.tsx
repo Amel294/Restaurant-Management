@@ -12,9 +12,9 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-64 bg-white h-screen py-6 border-r border-gray-200">
+    <aside className="w-full bg-white h-screen  border-r border-gray-200">
       <div className="flex items-center mb-8">
-        <img src={logo} alt="Logo" className="p-16 py-0 w-auto" />
+        <img src={logo} alt="Logo" className="px-16 pt-10 w-auto min-w-52" />
       </div>
       <nav>
         <ul className="space-y-1 p-8 ps-0 pt-0">
@@ -26,7 +26,7 @@ const Sidebar = () => {
                 selectedItem === key ? "bg-green-200 text-green-600 font-semibold" : "hover:bg-green-100 text-gray-700"
               }`}
               whileHover={{ scale: selectedItem === key ? 1 : 1.05,x:selectedItem === key ? 0 : 15}}  
-              transition={{ type: 'spring', stiffness: 500 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               {selectedItem === key && (
                 <div className="absolute left-0 top-0 h-full w-1 bg-green-400 rounded-r-lg"></div>
