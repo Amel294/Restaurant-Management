@@ -107,6 +107,22 @@ const updateOrder = async (req, res) => {
     }
 };
 
+const deleteOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params; 
+
+        const deletedOrder = await Order.findOneAndDelete({ orderId });
+
+        if (!deletedOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.status(200).json({ message: 'Order deleted successfully', order: deletedOrder });
+    } catch (err) {
+        console.error('Error deleting order:', err);
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
 module.exports = {
-    createOrder, getOrders,updateOrder
+    createOrder, getOrders,updateOrder,deleteOrder
 };
