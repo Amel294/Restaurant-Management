@@ -1,6 +1,7 @@
 // Path: client\src\App.tsx
 
 import DashboardOverview from "./components/Dashboard Overview/DashboardOverview";
+import OrderMetrics from "./components/Order Metrics/OrderMetrics";
 import Sidebar from "./components/Sidebar/Sidebar";
 import TopBar from "./components/TopBar.tsx/TopBar";
 import TopSection from "./components/TopSection/TopSection";
@@ -15,6 +16,7 @@ function App() {
         <TopBar />
         <TopSection/>
         <DashboardOverview/>
+        <OrderMetrics/>
       </div>
     </div>
   );
