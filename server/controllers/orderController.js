@@ -79,6 +79,34 @@ const getOrders = async (req, res) => {
     }
 };
 
+const updateOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params;  
+        const { customerName, productName, date, quantity, price, location, status } = req.body;
+
+        const order = await Order.findOne({ orderId });
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        order.customerName = customerName || order.customerName;
+        order.productName = productName || order.productName;
+        order.date = date ? new Date(date) : order.date;
+        order.quantity = quantity || order.quantity;
+        order.price = price || order.price;
+        order.location = location || order.location;
+        order.status = status || order.status;
+
+        await order.save();
+
+        res.status(200).json({ message: 'Order updated successfully', order });
+    } catch (err) {
+        console.error('Error updating order:', err);
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
 module.exports = {
-    createOrder, getOrders
+    createOrder, getOrders,updateOrder
 };
