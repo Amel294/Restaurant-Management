@@ -1,13 +1,20 @@
 // Path: client\src\App.tsx
 
-import Sidebar from "./components/Sidebar/Sidebar"
+import Sidebar from "./components/Sidebar/Sidebar";
+import TopBar from "./components/TopBar.tsx/TopBar";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar/>
+    <div className="min-h-screen overflow-x-hidden max-w-full bg-gray-200 grid grid-cols-7 ">
+      <div className="col-span-1  border-gray-200">
+        <Sidebar />
+      </div>
+      <div className="col-span-6 px-10 pt-6">
+        <TopBar />
+      </div>
 
     </div>
-  )
+  );
 }
-export default App
+
+export default App;
