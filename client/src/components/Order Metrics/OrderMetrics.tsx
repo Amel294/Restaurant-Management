@@ -1,13 +1,13 @@
 // Path: client\src\components\Order Metrics\OrderMetrics.tsx
-import ChartOrder from "./ChartOrder"
+import ChartOrderWeek from "./ChartOrderWeek"
 import PieChartCard from "./PieChartCard"
 function OrderMetrics() {
   return (
-    <div className="grid grid-cols-2 pe-4">
+    <div className="grid grid-cols-2  gap-5">
         
         <PieChartCard/>
 
-        <ChartOrder/>
+        <ChartOrderWeek/>
     </div>
   )
 }
