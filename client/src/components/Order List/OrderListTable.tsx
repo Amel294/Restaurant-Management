@@ -1,10 +1,11 @@
 // Path: client\src\components\Order List\OrderListTable.tsx
-
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../../api/axiosInstance';
-import { Table, Spin, message, Button, Space } from 'antd';
+import { Table, Spin, message, Button, Space, DatePicker } from 'antd';
 import { Edit, Trash } from 'lucide-react';
 import EditOrderModal from './EditOrderModal';
+
+const { RangePicker } = DatePicker;
 
 interface Order {
   orderId: string;
@@ -29,12 +30,16 @@ function OrdersListTable() {
   const [totalResults, setTotalResults] = useState(0);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
 
     try {
-      const response = await axiosInstance.get(`/orders?page=${page}`);
+      const response = await axiosInstance.get(`/orders?page=${page}`, {
+        params: { startDate, endDate },
+      });
       if (response.status !== 200) {
         throw new Error('Failed to fetch orders: ' + response.statusText);
       }
@@ -51,7 +56,7 @@ function OrdersListTable() {
     } finally {
       setIsLoading(false);
     }
-  }, [page]);
+  }, [page, startDate, endDate]);
 
   useEffect(() => {
     fetchOrders();
@@ -92,6 +97,11 @@ function OrdersListTable() {
       message.error('Failed to update order');
     }
     setIsEditModalVisible(false);
+  };
+
+  const onDateChange = (dates: any, dateStrings: [string, string]) => {
+    setStartDate(dateStrings[0]);
+    setEndDate(dateStrings[1]);
   };
 
   const columns = [
@@ -154,21 +164,33 @@ function OrdersListTable() {
   ];
 
   return (
-    <div className='p-10'>
+    <div className="p-10">
       {isLoading ? (
         <Spin size="large" />
       ) : (
-        <Table
-          dataSource={orders}
-          columns={columns}
-          rowKey="orderId"
-          pagination={{
-            current: page,
-            total: totalResults,
-            pageSize: 10,
-            onChange: handlePageChange,
-          }}
-        />
+        <>
+          <div className="border-[1px] border-blue-500 p-2 inline-flex items-center gap-4 rounded-lg mb-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">Choose Date</span>
+              <RangePicker onChange={onDateChange} />
+            </div>
+            <Button type="primary" className="ml-auto" onClick={() => fetchOrders()}>
+              Search
+            </Button>
+          </div>
+
+          <Table
+            dataSource={orders}
+            columns={columns}
+            rowKey="orderId"
+            pagination={{
+              current: page,
+              total: totalResults,
+              pageSize: 10,
+              onChange: handlePageChange,
+            }}
+          />
+        </>
       )}
       <EditOrderModal
         isVisible={isEditModalVisible}
