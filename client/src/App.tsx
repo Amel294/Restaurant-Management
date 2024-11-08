@@ -6,6 +6,7 @@ import OrderMetrics from "./components/Order Metrics/OrderMetrics";
 import Sidebar from "./components/Sidebar/Sidebar";
 import TopBar from "./components/TopBar.tsx/TopBar";
 import TopSection from "./components/TopSection/TopSection";
+import TotalRevenue from "./components/Total Revenue/TotalRevenue";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <TopSection />
         <DashboardOverview />
         <OrderMetrics />
+        <TotalRevenue/>
         <OrdersList />
       </div>
     </div>
