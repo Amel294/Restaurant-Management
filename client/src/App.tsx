@@ -9,16 +9,19 @@ import TopSection from "./components/TopSection/TopSection";
 
 function App() {
   return (
-    <div className="min-h-screen overflow-x-hidden max-w-full bg-gray-200 grid grid-cols-7 ">
-      <div className="col-span-1  border-gray-200">
+    <div className="min-h-screen bg-gray-200 flex">
+      {}
+      <div className="w-1/6 fixed top-0 left-0 h-full border-r border-gray-200 z-10">
         <Sidebar />
       </div>
-      <div className="col-span-6 px-10 pt-6">
+
+      {}
+      <div className="ml-[16.666%] w-5/6 px-10 pt-6">
         <TopBar />
-        <TopSection/>
-        <DashboardOverview/>
-        <OrderMetrics/>
-        <OrdersList/>
+        <TopSection />
+        <DashboardOverview />
+        <OrderMetrics />
+        <OrdersList />
       </div>
     </div>
   );
