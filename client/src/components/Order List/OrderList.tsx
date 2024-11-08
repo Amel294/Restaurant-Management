@@ -3,6 +3,7 @@ import { ListPlus } from "lucide-react"
 import OrdersListTable from "./OrderListTable"
 import { useState } from "react";
 import AddOrderModal from "./AddOrderModel";
+import { BrowserRouter } from "react-router-dom";
 function OrderList() {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -21,7 +22,10 @@ function OrderList() {
                 <AddOrderModal isVisible={isModalVisible} onClose={closeModal} onAddOrder={handleAddOrder} />
 
             </div>
+            <BrowserRouter>
             <OrdersListTable />
+            </BrowserRouter>
+
         </div>
     )
 }
