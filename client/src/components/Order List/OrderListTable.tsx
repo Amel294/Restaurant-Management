@@ -1,9 +1,10 @@
 // Path: client\src\components\Order List\OrderListTable.tsx
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { Table, Spin, message, Button, Space } from 'antd';
 import { Edit, Trash } from 'lucide-react';
+import EditOrderModal from './EditOrderModal';
 
 interface Order {
   orderId: string;
@@ -22,72 +23,75 @@ interface OrderResponse {
 }
 
 function OrdersListTable() {
-  const [orders, setOrders] = useState<Order[]>([]); 
-  const [isLoading, setIsLoading] = useState(false); 
-  const [error, setError] = useState<string | null>(null); 
-  const [page, setPage] = useState(1); 
-  const [limit, setLimit] = useState(10); 
-  const [totalResults, setTotalResults] = useState(0); 
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setIsLoading(true);
-    setError(null);
 
     try {
-      const response = await axiosInstance.get(`/orders?page=${page}&limit=${limit}`);
-
+      const response = await axiosInstance.get(`/orders?page=${page}`);
       if (response.status !== 200) {
         throw new Error('Failed to fetch orders: ' + response.statusText);
       }
 
       const responseData: OrderResponse = response.data;
       setOrders(responseData.orders);
-      setTotalResults(responseData.totalResults); 
-    } catch (err: any) {
-      setError(err.message);
-      message.error('Failed to load orders.');
+      setTotalResults(responseData.totalResults);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        message.error(`Failed to load orders: ${err.message}`);
+      } else {
+        message.error('An unknown error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchOrders();
-  }, [page, limit]);
+  }, [fetchOrders]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
-  const handleLimitChange = (newLimit: number) => {
-    setLimit(newLimit);
-    setPage(1); 
-  };
-
   const handleDelete = async (orderId: string) => {
-    
     const updatedOrders = orders.filter(order => order.orderId !== orderId);
     setOrders(updatedOrders);
 
     try {
       await axiosInstance.delete(`/orders/${orderId}`);
       message.success('Order deleted successfully');
-
       setTotalResults(prevTotal => prevTotal - 1);
-
       if (updatedOrders.length === 0 && page > 1) {
-        setPage(page - 1); 
+        setPage(page - 1);
       }
-    } catch (error) {
+    } catch {
       message.error('Failed to delete order');
-      
       setOrders(orders);
     }
   };
 
-  const handleEdit = (orderId: string) => {
-    
-    console.log('Editing order:', orderId);
+  const handleEdit = (order: Order) => {
+    setSelectedOrder(order);
+    setIsEditModalVisible(true);
+  };
+
+  const handleEditOrder = async (updatedOrder: Order) => {
+    try {
+      await axiosInstance.put(`/orders/${updatedOrder.orderId}`, updatedOrder);
+      message.success('Order updated successfully');
+      setOrders(orders.map(order => (order.orderId === updatedOrder.orderId ? updatedOrder : order)));
+    } catch {
+      message.error('Failed to update order');
+    }
+    setIsEditModalVisible(false);
   };
 
   const columns = [
@@ -105,59 +109,45 @@ function OrdersListTable() {
       title: 'Order ID',
       dataIndex: 'orderId',
       key: 'orderId',
-      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Customer Name',
       dataIndex: 'customerName',
       key: 'customerName',
-      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Product Name',
       dataIndex: 'productName',
       key: 'productName',
-      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
-      render: (text: number) => text || 'N/A',
     },
     {
       title: 'Quantity',
       dataIndex: 'quantity',
       key: 'quantity',
-      render: (text: number) => text || 'N/A',
     },
     {
       title: 'Location',
       dataIndex: 'location',
       key: 'location',
-      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Action',
       dataIndex: 'action',
       key: 'action',
-      render: (_, record: Order) => (
+      render: (_: unknown, record: Order) => (
         <Space size="middle">
-          <Button
-            icon={<Trash />}
-            danger
-            onClick={() => handleDelete(record.orderId)}
-          />
-          <Button
-            icon={<Edit />}
-            onClick={() => handleEdit(record.orderId)}
-          />
+          <Button icon={<Edit />} onClick={() => handleEdit(record)} />
+          <Button icon={<Trash />} danger onClick={() => handleDelete(record.orderId)} />
         </Space>
       ),
     },
@@ -167,26 +157,25 @@ function OrdersListTable() {
     <div className='p-10'>
       {isLoading ? (
         <Spin size="large" />
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : orders.length === 0 ? (
-        <p>No orders available</p>
       ) : (
         <Table
           dataSource={orders}
           columns={columns}
           rowKey="orderId"
-          loading={isLoading}
-          bordered
           pagination={{
             current: page,
             total: totalResults,
-            pageSize: limit,
+            pageSize: 10,
             onChange: handlePageChange,
-            onShowSizeChange: handleLimitChange,
           }}
         />
       )}
+      <EditOrderModal
+        isVisible={isEditModalVisible}
+        onClose={() => setIsEditModalVisible(false)}
+        order={selectedOrder}
+        onEditOrder={handleEditOrder}
+      />
     </div>
   );
 }
