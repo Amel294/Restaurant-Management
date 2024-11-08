@@ -6,7 +6,7 @@ import DashboardOverview from "./components/Dashboard Overview/DashboardOverview
 import OrdersList from "./components/Order List/OrderList";
 import OrderMetrics from "./components/Order Metrics/OrderMetrics";
 import Sidebar from "./components/Sidebar/Sidebar";
-import TopBar from "./components/TopBar.tsx/TopBar";
+import TopBar from "./components/TopBar/TopBar";
 import TopSection from "./components/TopSection/TopSection";
 import TotalRevenue from "./components/Total Revenue/TotalRevenue";
 
