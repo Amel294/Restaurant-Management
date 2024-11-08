@@ -1,5 +1,4 @@
 // Path: client\src\components\Total Revenue\TotalRevenue.tsx
-import React from 'react';
 import {
     LineChart,
     Line,
@@ -7,7 +6,6 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
     ResponsiveContainer,
 } from 'recharts';
 
