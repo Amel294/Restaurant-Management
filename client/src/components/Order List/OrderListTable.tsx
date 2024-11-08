@@ -1,4 +1,5 @@
 // Path: client\src\components\Order List\OrderListTable.tsx
+
 import { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { Table, Spin, message, Button, Space } from 'antd';
@@ -21,28 +22,27 @@ interface OrderResponse {
 }
 
 function OrdersListTable() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [orders, setOrders] = useState<Order[]>([]); 
+  const [isLoading, setIsLoading] = useState(false); 
+  const [error, setError] = useState<string | null>(null); 
+  const [page, setPage] = useState(1); 
+  const [limit, setLimit] = useState(10); 
+  const [totalResults, setTotalResults] = useState(0); 
 
-  // Fetch orders function to be reused
   const fetchOrders = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await axiosInstance.get(`/orders?page=${page}&limit=${limit}`);
-      
-      console.log('Response:', response.data); // Log the full response to check structure
 
       if (response.status !== 200) {
         throw new Error('Failed to fetch orders: ' + response.statusText);
       }
 
       const responseData: OrderResponse = response.data;
-      setOrders(responseData.orders); // Ensure responseData.orders is properly set
+      setOrders(responseData.orders);
+      setTotalResults(responseData.totalResults); 
     } catch (err: any) {
       setError(err.message);
       message.error('Failed to load orders.');
@@ -52,7 +52,7 @@ function OrdersListTable() {
   };
 
   useEffect(() => {
-    fetchOrders(); // Fetch orders on component mount and when page or limit changes
+    fetchOrders();
   }, [page, limit]);
 
   const handlePageChange = (newPage: number) => {
@@ -61,36 +61,33 @@ function OrdersListTable() {
 
   const handleLimitChange = (newLimit: number) => {
     setLimit(newLimit);
+    setPage(1); 
   };
 
   const handleDelete = async (orderId: string) => {
-  // Optimistic update: remove the order locally
-  const updatedOrders = orders.filter(order => order.orderId !== orderId);
-  setOrders(updatedOrders);
+    
+    const updatedOrders = orders.filter(order => order.orderId !== orderId);
+    setOrders(updatedOrders);
 
-  try {
-    await axiosInstance.delete(`/orders/${orderId}`);
-    message.success('Order deleted successfully');
+    try {
+      await axiosInstance.delete(`/orders/${orderId}`);
+      message.success('Order deleted successfully');
 
-    // Update total results to reflect the deletion
-    setTotalResults(prevTotal => prevTotal - 1);
+      setTotalResults(prevTotal => prevTotal - 1);
 
-    // Adjust the page if needed (e.g., if deleting the last item on a page)
-    if (updatedOrders.length === 0 && page > 1) {
-      setPage(page - 1); // Go to the previous page if no items remain on the current page
+      if (updatedOrders.length === 0 && page > 1) {
+        setPage(page - 1); 
+      }
+    } catch (error) {
+      message.error('Failed to delete order');
+      
+      setOrders(orders);
     }
-  } catch (error) {
-    message.error('Failed to delete order');
-    // Revert the optimistic update if deletion fails
-    setOrders(orders);
-  }
-};
+  };
 
   const handleEdit = (orderId: string) => {
-    // You can navigate to an edit page or open a modal here
+    
     console.log('Editing order:', orderId);
-    // Navigate to the edit page (e.g., using React Router)
-    // history.push(`/edit-order/${orderId}`);
   };
 
   const columns = [
@@ -100,7 +97,7 @@ function OrdersListTable() {
       key: 'date',
       render: (text: string) => (
         <span style={{ fontWeight: 'bold' }}>
-          {new Date(text).toLocaleDateString() || 'N/A'} {/* Fallback in case date is undefined */}
+          {new Date(text).toLocaleDateString() || 'N/A'}
         </span>
       ),
     },
@@ -108,43 +105,43 @@ function OrdersListTable() {
       title: 'Order ID',
       dataIndex: 'orderId',
       key: 'orderId',
-      render: (text: string) => text || 'N/A', // Fallback if orderId is undefined
+      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Customer Name',
       dataIndex: 'customerName',
       key: 'customerName',
-      render: (text: string) => text || 'N/A', // Fallback if customerName is undefined
+      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Product Name',
       dataIndex: 'productName',
       key: 'productName',
-      render: (text: string) => text || 'N/A', // Fallback if productName is undefined
+      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
-      render: (text: number) => text || 'N/A', // Fallback if price is undefined
+      render: (text: number) => text || 'N/A',
     },
     {
       title: 'Quantity',
       dataIndex: 'quantity',
       key: 'quantity',
-      render: (text: number) => text || 'N/A', // Fallback if quantity is undefined
+      render: (text: number) => text || 'N/A',
     },
     {
       title: 'Location',
       dataIndex: 'location',
       key: 'location',
-      render: (text: string) => text || 'N/A', // Fallback if location is undefined
+      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (text: string) => text || 'N/A', // Fallback if status is undefined
+      render: (text: string) => text || 'N/A',
     },
     {
       title: 'Action',
@@ -183,7 +180,7 @@ function OrdersListTable() {
           bordered
           pagination={{
             current: page,
-            total: orders.length,
+            total: totalResults,
             pageSize: limit,
             onChange: handlePageChange,
             onShowSizeChange: handleLimitChange,
