@@ -3,11 +3,9 @@ import ChartOrderWeek from "./ChartOrderWeek"
 import PieChartCard from "./PieChartCard"
 function OrderMetrics() {
   return (
-    <div className="grid grid-cols-2  gap-5">
-        
-        <PieChartCard/>
-
-        <ChartOrderWeek/>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <PieChartCard />
+      <ChartOrderWeek />
     </div>
   )
 }
