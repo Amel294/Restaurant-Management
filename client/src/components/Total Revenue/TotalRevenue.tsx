@@ -69,7 +69,6 @@ function TotalRevenue() {
                     <YAxis domain={[0, 40]} /> {/* Set the max value of Y-axis to 40 */}
                     <CartesianGrid strokeDasharray="3 3" />
                     <Tooltip />
-                    <Legend />
                     <Line type="monotone" dataKey="value" stroke="#2B9BDA" strokeWidth={2} dot={false} />
                     <Line type="monotone" dataKey="value" stroke="#F00" strokeWidth={2} dot={false} data={data2021} />
                 </LineChart>
