@@ -37,10 +37,10 @@ function OrdersListTable() {
 
   // Use search params from URL for filters
   const [searchParams, setSearchParams] = useSearchParams();
-  const startDate = searchParams.get( 'startDate' ) || '';
-  const endDate = searchParams.get( 'endDate' ) || '';
-  const searchQuery = searchParams.get( 'searchQuery' ) || ''; // Get searchQuery directly from the URL
-  const status = searchParams.get( 'status' ) || ''; // Get status from the URL
+  const startDate = searchParams.get('startDate') || '';
+  const endDate = searchParams.get('endDate') || '';
+  const searchQuery = searchParams.get('searchQuery') || ''; 
+  const status = searchParams.get('status') || ''; 
 
   // Fetch orders based on filters (date range, search query, status, and page)
   const fetchOrders = async () => {
@@ -48,7 +48,7 @@ function OrdersListTable() {
     try {
       const response = await axiosInstance.get( '/orders', {
         params: { page, startDate, endDate, searchText: searchQuery, status },
-      } );
+      });
 
       if ( response.status !== 200 ) {
         throw new Error( 'Failed to fetch orders: ' + response.statusText );
@@ -71,7 +71,7 @@ function OrdersListTable() {
   // Trigger fetch when component mounts or dependencies change
   useEffect( () => {
     fetchOrders();
-  }, [page, startDate, endDate, status] ); // Add `status` as a dependency
+  }, [page, startDate, endDate, status]);
 
   // Pagination handler
   const handlePageChange = ( newPage: number ) => {
@@ -199,8 +199,8 @@ function OrdersListTable() {
       key: 'action',
       render: ( _: unknown, record: Order ) => (
         <Space size="middle">
-          <Button icon={<Edit />} onClick={() => handleEdit( record )} />
-          <Button icon={<Trash />} danger onClick={() => handleDelete( record.orderId )} />
+          <Button icon={<Edit />} onClick={() => handleEdit(record)} />
+          <Button icon={<Trash />} danger onClick={() => handleDelete(record.orderId)} />
         </Space>
       ),
     },
@@ -208,70 +208,66 @@ function OrdersListTable() {
 
   return (
     <div className="p-10">
-      {isLoading ? (
-        <Spin size="large" />
-      ) : (
-        <>
-          {/* Filters Section */}
-          <div className='flex items-center gap-4'>
-            <div className="border-[1px] border-blue-500 p-3 inline-flex items-center gap-4 rounded-lg mb-4">
-              <span className="text-sm">Choose Date</span>
-              <RangePicker
-                value={[startDate ? dayjs( startDate ) : null, endDate ? dayjs( endDate ) : null]}
-                onChange={onDateChange}
-              />
-            </div>
-            {/* Status Filter Dropdown */}
-            <div className="border-[1px] border-blue-500 p-3 inline-flex items-center gap-4 rounded-lg mb-4">
-              <div>Delivery Status</div>
-              <Select
-                value={status || 'any'}
-                onChange={onStatusChange}
-                style={{ width: 120 }}
-              >
-                <Option value="all">All</Option>
-                <Option value="pending">Pending</Option>
-                <Option value="approved">Approved</Option>
-                <Option value="delivered">Delivered</Option>
-              </Select>
-            </div>
-            {/* Search Section */}
-            <div className="border-[1px] border-blue-500 p-2 inline-flex items-center gap-4 rounded-lg mb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center">
-                  
-                  <input
-                    type="text"
-                    className="w-full max-w-[160px] bg-white pl-2 text-base font-semibold outline-0"
-                    value={searchQuery}
-                    onChange={onSearchChange}
-                    placeholder="Search"
-                  />
-                  <input
-                    type="button"
-                    value="Search"
-                    className="bg-blue-500 p-2 rounded-tr-lg rounded-br-lg text-white hover:bg-blue-800 transition-colors"
-                    onClick={onSearchSubmit}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Orders Table */}
-          <Table
-            dataSource={orders}
-            columns={columns}
-            rowKey="orderId"
-            pagination={{
-              current: page,
-              total: totalResults,
-              pageSize: 10,
-              onChange: handlePageChange,
-            }}
+      {/* Filters Section */}
+      <div className="flex items-center gap-4">
+        <div className="border-[1px] border-blue-500 p-3 inline-flex items-center gap-4 rounded-lg mb-4">
+          <span className="text-sm">Choose Date</span>
+          <RangePicker
+            value={[startDate ? dayjs(startDate) : null, endDate ? dayjs(endDate) : null]}
+            onChange={onDateChange}
           />
-        </>
-      )}
+        </div>
+        <div className="border-[1px] border-blue-500 p-3 inline-flex items-center gap-4 rounded-lg mb-4">
+          <div>Delivery Status</div>
+          <Select
+            value={status || 'any'}
+            onChange={onStatusChange}
+            style={{ width: 120 }}
+          >
+            <Option value="all">All</Option>
+            <Option value="pending">Pending</Option>
+            <Option value="approved">Approved</Option>
+            <Option value="delivered">Delivered</Option>
+          </Select>
+        </div>
+        <div className="border-[1px] border-blue-500 p-2 inline-flex items-center gap-4 rounded-lg mb-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              className="w-full max-w-[160px] bg-white pl-2 text-base font-semibold outline-0"
+              value={searchQuery}
+              onChange={onSearchChange}
+              placeholder="Search"
+            />
+            <input
+              type="button"
+              value="Search"
+              className="bg-blue-500 p-2 rounded-tr-lg rounded-br-lg text-white hover:bg-blue-800 transition-colors"
+              onClick={onSearchSubmit}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div style={{ position: 'relative' }}>
+        {isLoading && (
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Spin size="large" />
+          </div>
+        )}
+        <Table
+          rowKey="orderId"
+          columns={columns}
+          dataSource={orders}
+          pagination={{
+            current: page,
+            total: totalResults,
+            pageSize: 10,
+            onChange: handlePageChange,
+          }}
+        />
+      </div>
 
       {/* Edit Order Modal */}
       <EditOrderModal
