@@ -1,4 +1,5 @@
 // Path: client\src\App.tsx
+
 import { useState, useEffect, useRef } from 'react';
 import { Menu } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -37,8 +38,16 @@ function App() {
       }
     };
 
-    window.addEventListener('resize', updateDragConstraints);
-    updateDragConstraints();
+    const resetMenuPosition = () => {
+      setMenuPosition({ x: window.innerWidth - 100, y: window.innerHeight - 125 });
+    };
+
+    window.addEventListener('resize', () => {
+      updateDragConstraints();
+      resetMenuPosition(); 
+    });
+
+    updateDragConstraints(); 
 
     return () => {
       window.removeEventListener('resize', updateDragConstraints);
@@ -96,7 +105,7 @@ function App() {
         <Menu size={32} />
       </motion.div>
 
-      {/* Sidebar animation */}
+      {}
       <motion.div
         className="fixed top-0 left-0 h-full border-r border-gray-200 z-10"
         initial={{ width: 0, opacity: 0 }}
@@ -113,7 +122,7 @@ function App() {
         <Sidebar />
       </motion.div>
 
-      {/* Main content */}
+      {}
       <div className={`${!sidebarHidden ? 'md:ml-[15%]' : 'md:ml-0'} ml-0 w-full px-10 pt-6`}>
         <TopBar />
         <TopSection />
