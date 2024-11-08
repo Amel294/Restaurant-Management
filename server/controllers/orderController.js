@@ -35,9 +35,32 @@ const createOrder = async (req, res) => {
 
 const getOrders = async (req, res) => {
     try {
-        const { customerName, productName, status, location, sortBy = 'date', sortOrder = 'desc', page = 1, limit = 10, startDate, endDate } = req.query;
+        const {
+            customerName,
+            productName,
+            status,
+            location,
+            searchText, 
+            sortBy = 'date',
+            sortOrder = 'desc',
+            page = 1,
+            limit = 10,
+            startDate,
+            endDate,
+        } = req.query;
 
         const filter = {};
+
+        if (searchText) {
+            const searchRegex = new RegExp(searchText, 'i');
+            filter.$or = [
+                { customerName: searchRegex },
+                { productName: searchRegex },
+                { status: searchRegex },
+                { location: searchRegex },
+                { orderId: searchRegex },
+            ];
+        }
 
         if (customerName) {
             filter.customerName = new RegExp(customerName, 'i'); 
