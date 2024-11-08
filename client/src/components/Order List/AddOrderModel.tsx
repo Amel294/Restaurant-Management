@@ -1,7 +1,6 @@
 // Path: client\src\components\Order List\AddOrderModel.tsx
-
 import React, { useState } from 'react';
-import { Modal, Form, Input, Button, message, DatePicker, InputNumber, Select } from 'antd';
+import { Modal, Form, Input, message, DatePicker, InputNumber, Select } from 'antd';
 import axiosInstance from '../../api/axiosInstance';
 
 const { Option } = Select;
@@ -52,7 +51,7 @@ const AddOrderModal: React.FC<AddOrderModalProps> = ({ isVisible, onClose, onAdd
   return (
     <Modal
       title="Add New Order"
-      visible={isVisible}
+      open={isVisible} // Change 'visible' to 'open'
       onOk={handleOk}
       onCancel={handleCancel}
       confirmLoading={confirmLoading}
@@ -64,43 +63,37 @@ const AddOrderModal: React.FC<AddOrderModalProps> = ({ isVisible, onClose, onAdd
         <Form.Item
           name="customerName"
           label="Customer Name"
-          rules={[{ required: true, message: 'Please enter the customer name' }]}
-        >
+          rules={[{ required: true, message: 'Please enter the customer name' }]}>
           <Input placeholder="Enter customer name" />
         </Form.Item>
         <Form.Item
           name="productName"
           label="Product Name"
-          rules={[{ required: true, message: 'Please enter the product name' }]}
-        >
+          rules={[{ required: true, message: 'Please enter the product name' }]}>
           <Input placeholder="Enter product name" />
         </Form.Item>
         <Form.Item
           name="date"
           label="Order Date"
-          rules={[{ required: true, message: 'Please select the order date' }]}
-        >
+          rules={[{ required: true, message: 'Please select the order date' }]}>
           <DatePicker style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           name="quantity"
           label="Quantity"
-          rules={[{ required: true, message: 'Please enter the quantity' }]}
-        >
+          rules={[{ required: true, message: 'Please enter the quantity' }]}>
           <InputNumber style={{ width: '100%' }} min={1} placeholder="Enter quantity" />
         </Form.Item>
         <Form.Item
           name="price"
           label="Price"
-          rules={[{ required: true, message: 'Please enter the price' }]}
-        >
+          rules={[{ required: true, message: 'Please enter the price' }]}>
           <InputNumber style={{ width: '100%' }} min={0} placeholder="Enter price" />
         </Form.Item>
         <Form.Item
           name="location"
           label="Location"
-          rules={[{ required: true, message: 'Please enter the location' }]}
-        >
+          rules={[{ required: true, message: 'Please enter the location' }]}>
           <Input placeholder="Enter location" />
         </Form.Item>
         <Form.Item name="status" label="Status">
