@@ -106,8 +106,8 @@ const AddOrderModal: React.FC<AddOrderModalProps> = ({ isVisible, onClose, onAdd
         <Form.Item name="status" label="Status">
           <Select placeholder="Select status">
             <Option value="pending">Pending</Option>
-            <Option value="confirmed">Confirmed</Option>
-            <Option value="shipped">Shipped</Option>
+            <Option value="approved">Approved</Option>
+            <Option value="delivered">Delivered</Option>
           </Select>
         </Form.Item>
       </Form>
