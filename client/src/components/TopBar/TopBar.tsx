@@ -1,7 +1,7 @@
 // Path: client\src\components\TopBar\TopBar.tsx
 
 import { Bell, Gift, MessageSquareMore, SearchIcon, Settings } from 'lucide-react';
-import avatar from '../../assets/Avatar.jpeg';
+import avatar from '../../assets/avatar.jpeg';
 
 const TopBar = () => {
     return (
