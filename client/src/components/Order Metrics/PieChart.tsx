@@ -9,7 +9,7 @@ interface PieChartProps {
   label :string;
 }
 
-const PieChartComponent = ({ percentage, stroke,label }: PieChartProps) => {
+const PieChartComponent = ({ percentage, stroke, label }: PieChartProps) => {
   const data = [
     { name: 'Growth', value: percentage },
     { name: 'Potential', value: 100 - percentage },
@@ -31,7 +31,7 @@ const PieChartComponent = ({ percentage, stroke,label }: PieChartProps) => {
             startAngle={90}
             endAngle={450}
           >
-            {data.map((entry, index) => (
+            {data.map((_, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index]} />
             ))}
           </Pie>
