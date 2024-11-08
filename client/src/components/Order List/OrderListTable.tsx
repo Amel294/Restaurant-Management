@@ -1,9 +1,11 @@
 // Path: client\src\components\Order List\OrderListTable.tsx
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { Table, Spin, message, Button, Space, DatePicker } from 'antd';
 import { Edit, Trash } from 'lucide-react';
 import EditOrderModal from './EditOrderModal';
+import { useSearchParams } from 'react-router-dom';
+import dayjs, { Dayjs } from 'dayjs';
 
 const { RangePicker } = DatePicker;
 
@@ -30,16 +32,21 @@ function OrdersListTable() {
   const [totalResults, setTotalResults] = useState(0);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
 
+  // Use useSearchParams to manage URL query parameters
+  const [searchParams, setSearchParams] = useSearchParams();
+  const startDate = searchParams.get('startDate') || '';
+  const endDate = searchParams.get('endDate') || '';
+
+  // Fetch orders based on date range and page
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
 
     try {
-      const response = await axiosInstance.get(`/orders?page=${page}`, {
-        params: { startDate, endDate },
+      const response = await axiosInstance.get(`/orders`, {
+        params: { page, startDate, endDate },
       });
+
       if (response.status !== 200) {
         throw new Error('Failed to fetch orders: ' + response.statusText);
       }
@@ -99,9 +106,18 @@ function OrdersListTable() {
     setIsEditModalVisible(false);
   };
 
-  const onDateChange = (dates: any, dateStrings: [string, string]) => {
-    setStartDate(dateStrings[0]);
-    setEndDate(dateStrings[1]);
+  // Handle date change for RangePicker
+  const onDateChange = (
+    dates: [Dayjs | null, Dayjs | null] | null,
+    dateStrings: [string, string]
+  ) => {
+    if (dates && dates[0] && dates[1]) {
+      const [start, end] = dateStrings;
+      setSearchParams({ startDate: start, endDate: end });
+    } else {
+      setSearchParams({});
+    }
+    fetchOrders();
   };
 
   const columns = [
@@ -172,11 +188,14 @@ function OrdersListTable() {
           <div className="border-[1px] border-blue-500 p-2 inline-flex items-center gap-4 rounded-lg mb-4">
             <div className="flex items-center gap-2">
               <span className="text-sm">Choose Date</span>
-              <RangePicker onChange={onDateChange} />
+              <RangePicker
+                value={[
+                  startDate ? dayjs(startDate) : null,
+                  endDate ? dayjs(endDate) : null,
+                ]}
+                onChange={onDateChange}
+              />
             </div>
-            <Button type="primary" className="ml-auto" onClick={() => fetchOrders()}>
-              Search
-            </Button>
           </div>
 
           <Table
