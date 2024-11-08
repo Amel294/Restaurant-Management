@@ -1,7 +1,8 @@
 // Path: client\src\components\Order List\OrderListTable.tsx
+
 import { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance';
-import { Table, Spin, message, Button, Space, DatePicker, Select, Tag } from 'antd';
+import { Table, Spin, message, Button, Space, DatePicker, Select, Tag, Tooltip } from 'antd';
 import { Edit, Trash } from 'lucide-react';
 import EditOrderModal from './EditOrderModal';
 import { useSearchParams } from 'react-router-dom';
@@ -27,7 +28,7 @@ interface OrderResponse {
 }
 
 function OrdersListTable() {
-  // State management
+  
   const [orders, setOrders] = useState<Order[]>( [] );
   const [isLoading, setIsLoading] = useState( false );
   const [page, setPage] = useState( 1 );
@@ -35,14 +36,12 @@ function OrdersListTable() {
   const [isEditModalVisible, setIsEditModalVisible] = useState( false );
   const [selectedOrder, setSelectedOrder] = useState<Order | null>( null );
 
-  // Use search params from URL for filters
   const [searchParams, setSearchParams] = useSearchParams();
   const startDate = searchParams.get('startDate') || '';
   const endDate = searchParams.get('endDate') || '';
   const searchQuery = searchParams.get('searchQuery') || ''; 
   const status = searchParams.get('status') || ''; 
 
-  // Fetch orders based on filters (date range, search query, status, and page)
   const fetchOrders = async () => {
     setIsLoading( true );
     try {
@@ -68,17 +67,14 @@ function OrdersListTable() {
     }
   };
 
-  // Trigger fetch when component mounts or dependencies change
   useEffect( () => {
     fetchOrders();
   }, [page, startDate, endDate, status]);
 
-  // Pagination handler
   const handlePageChange = ( newPage: number ) => {
     setPage( newPage );
   };
 
-  // Delete order handler
   const handleDelete = async ( orderId: string ) => {
     const updatedOrders = orders.filter( order => order.orderId !== orderId );
     setOrders( updatedOrders );
@@ -92,17 +88,15 @@ function OrdersListTable() {
       }
     } catch {
       message.error( 'Failed to delete order' );
-      setOrders( orders ); // Revert back to the previous state if delete fails
+      setOrders( orders ); 
     }
   };
 
-  // Edit order handler
   const handleEdit = ( order: Order ) => {
     setSelectedOrder( order );
     setIsEditModalVisible( true );
   };
 
-  // Submit edited order
   const handleEditOrder = async ( updatedOrder: Order ) => {
     try {
       await axiosInstance.put( `/orders/${ updatedOrder.orderId }`, updatedOrder );
@@ -114,7 +108,6 @@ function OrdersListTable() {
     setIsEditModalVisible( false );
   };
 
-  // Date range change handler
   const onDateChange = (
     dates: [Dayjs | null, Dayjs | null] | null,
     dateStrings: [string, string]
@@ -129,25 +122,21 @@ function OrdersListTable() {
     fetchOrders();
   };
 
-  // Search input change handler (without triggering search)
   const onSearchChange = ( e: React.ChangeEvent<HTMLInputElement> ) => {
     const query = e.target.value;
     setSearchParams( { searchQuery: query, startDate, endDate, status } );
   };
 
-  // Submit search query handler
   const onSearchSubmit = () => {
     fetchOrders();
   };
 
-  // Status filter change handler
   const onStatusChange = ( value: string ) => {
     setSearchParams( { searchQuery, startDate, endDate, status: value } );
     setPage( 1 )
     fetchOrders();
   };
 
-  // Table columns definition
   const columns = [
     {
       title: 'Date',
@@ -195,7 +184,7 @@ function OrdersListTable() {
       key: 'status',
       render: (status: string) => {
         let color = 'default'; 
-        const displayStatus = status.charAt(0).toUpperCase() + status.slice(1); // Capitalize the first letter of status
+        const displayStatus = status.charAt(0).toUpperCase() + status.slice(1); 
   
         if (status === 'approved') {
           color = 'green';
@@ -227,17 +216,17 @@ function OrdersListTable() {
 
   return (
     <div className="p-10">
-      {/* Filters Section */}
-      <div className="flex items-center gap-4">
-        <div className="border-[1px] border-blue-500 p-3 inline-flex items-center gap-4 rounded-lg mb-4">
+      {}
+      <div className="flex items-center gap-1 md:gap-4 flex-col md:flex-row ">
+        <div className="border-[1px] border-blue-500 p-3 inline-flex items-center gap-4 rounded-lg mb-4 max-w-72 lg:max-w-full">
           <span className="text-sm">Choose Date</span>
           <RangePicker
             value={[startDate ? dayjs(startDate) : null, endDate ? dayjs(endDate) : null]}
             onChange={onDateChange}
           />
         </div>
-        <div className="border-[1px] border-blue-500 p-3 inline-flex items-center gap-4 rounded-lg mb-4">
-          <div>Delivery Status</div>
+        <div className="border-[1px] border-blue-500 p-3 inline-flex items-center gap-4 rounded-lg mb-4 w-full md:w-min max-w-72">
+          <div className='w-full'>Delivery Status</div>
           <Select
             value={status || 'any'}
             onChange={onStatusChange}
@@ -249,27 +238,29 @@ function OrdersListTable() {
             <Option value="delivered">Delivered</Option>
           </Select>
         </div>
-        <div className="border-[1px] border-blue-500 p-2 inline-flex items-center gap-4 rounded-lg mb-4">
-          <div className="flex items-center gap-2">
+        <div className="border-[1px] border-blue-500 p-2 inline-flex items-center gap-4 rounded-lg mb-4 w-full max-w-72 ">
+          <div className="flex items-center border-2 rounded-lg">
+            <Tooltip placement="top" title='Search for customer name, product name, location, and order ID' className=''>
+
             <input
               type="text"
-              className="w-full max-w-[160px] bg-white pl-2 text-base font-semibold outline-0"
+              className=" bg-white pl-2 text-base font-semibold outline-0"
               value={searchQuery}
               onChange={onSearchChange}
-              placeholder="Search"
-            />
+              placeholder="Search "
+              />
             <input
               type="button"
               value="Search"
               className="bg-blue-500 p-2 rounded-tr-lg rounded-br-lg text-white hover:bg-blue-800 transition-colors"
               onClick={onSearchSubmit}
-            />
+              />
+              </Tooltip>
           </div>
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', overflowX: 'auto' }}>
         {isLoading && (
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Spin size="large" />
@@ -285,10 +276,11 @@ function OrdersListTable() {
             pageSize: 10,
             onChange: handlePageChange,
           }}
+          scroll={{ x: 'max-content' }}
         />
       </div>
 
-      {/* Edit Order Modal */}
+      {}
       <EditOrderModal
         isVisible={isEditModalVisible}
         onClose={() => setIsEditModalVisible( false )}

@@ -12,12 +12,12 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-200 flex">
       {}
-      <div className="w-1/6 fixed top-0 left-0 h-full border-r border-gray-200 z-10">
+      {/* <div className="w-1/6 fixed top-0 left-0 h-full border-r border-gray-200 z-10">
         <Sidebar />
-      </div>
+      </div> */}
 
       {}
-      <div className="ml-[16.666%] w-5/6 px-10 pt-6">
+      <div className=" w-full px-10 pt-6">
         <TopBar />
         <TopSection />
         <DashboardOverview />
