@@ -1,8 +1,8 @@
 // Path: client\src\components\Order List\OrderListTable.tsx
 import { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance';
-import { Table, Spin, message, Button, Space, DatePicker, Select } from 'antd';
-import { Edit, Search, Trash } from 'lucide-react';
+import { Table, Spin, message, Button, Space, DatePicker, Select, Tag } from 'antd';
+import { Edit, Trash } from 'lucide-react';
 import EditOrderModal from './EditOrderModal';
 import { useSearchParams } from 'react-router-dom';
 import dayjs, { Dayjs } from 'dayjs';
@@ -125,6 +125,7 @@ function OrdersListTable() {
     } else {
       setSearchParams( {} );
     }
+    setPage(1)
     fetchOrders();
   };
 
@@ -192,6 +193,24 @@ function OrdersListTable() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      render: (status: string) => {
+        let color = 'default'; 
+        const displayStatus = status.charAt(0).toUpperCase() + status.slice(1); // Capitalize the first letter of status
+  
+        if (status === 'approved') {
+          color = 'green';
+        } else if (status === 'delivered') {
+          color = 'blue';
+        } else if (status === 'pending') {
+          color = 'orange';
+        }
+  
+        return (
+          <Tag color={color} key={status}>
+            {displayStatus}
+          </Tag>
+        );
+      },
     },
     {
       title: 'Action',
