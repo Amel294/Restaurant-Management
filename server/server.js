@@ -11,7 +11,9 @@ connectDB();
 
 app.use(cors());
 app.use(express.json());
-
+app.get('/',(req,res)=>{
+  res.send('Server is running');
+})
 app.use('/api', orderRoutes);
 
 app.listen(PORT, () => {
